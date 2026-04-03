@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="160" viewBox="0 0 200 160" fill="none" aria-hidden="true">
+  <defs>
+
+    <linearGradient id="ei-g1" x1="40" y1="20" x2="120" y2="100">
+      <stop stop-color="#2a282e"/>
+      <stop offset="1" stop-color="#141416"/>
+    </linearGradient>
+    <linearGradient id="ei-acc" x1="86" y1="28" x2="158" y2="92">
+      <stop stop-color="#f0a84a" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#6366f1" stop-opacity="0.22"/>
+    </linearGradient>
+
+  </defs>
+  <ellipse cx="100" cy="138" rx="72" ry="10" fill="#000" fill-opacity="0.22"/>
+  <path fill="url(#ei-g1)" stroke="rgba(240,168,74,0.2)" stroke-width="1"
+    d="M46 38h108a12 12 0 0112 12v52a12 12 0 01-12 12H46a12 12 0 01-12-12V50a12 12 0 0112-12z"/>
+  <path fill="url(#ei-acc)" d="M46 38l54 36 54-36v12L100 86 46 50V38z" opacity="0.9"/>
+  <circle cx="72" cy="56" r="14" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)"/>
+  <circle cx="72" cy="56" r="6" fill="rgba(240,168,74,0.35)"/>
+  <circle cx="128" cy="56" r="14" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.1)"/>
+  <path stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round"
+    d="M122 56h8M130 56h8"/>
+  <path stroke="rgba(255,255,255,0.14)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4 6"
+    d="M64 104h72"/>
+  <circle cx="100" cy="112" r="3" fill="rgba(240,168,74,0.45)"/>
+</svg>

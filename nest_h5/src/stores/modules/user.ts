@@ -13,8 +13,10 @@ const InitUserInfo: UserState = {
   uid: 0,
   nickname: '',
   name: '',
+  avatar: '',
   email: '',
   isVip: false,
+  inviteCode: '',
 }
 
 export const useUserStore = defineStore('user', () => {
@@ -34,8 +36,10 @@ export const useUserStore = defineStore('user', () => {
         uid: profile.id,
         nickname: profile.username,
         name: profile.username,
+        avatar: profile.avatar ?? '',
         email: profile.email,
         isVip: profile.isVip,
+        inviteCode: profile.inviteCode,
       })
     }
     catch (error) {
@@ -51,8 +55,10 @@ export const useUserStore = defineStore('user', () => {
         uid: data.id,
         nickname: data.username,
         name: data.username,
+        avatar: data.avatar ?? '',
         email: data.email,
         isVip: data.isVip,
+        inviteCode: data.inviteCode,
       })
     }
     catch (error) {

@@ -10,12 +10,17 @@
 
 <script setup lang="ts">
 import type { PickerColumn } from 'vant'
+import GlobalShareOverlay from '@/components/GlobalShareOverlay.vue'
+import { getMyInvitationsSummary } from '@/api/user'
 import { useUserStore } from '@/stores'
 import { languageColumns, locale } from '@/utils/i18n'
 
 const { t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
+
+const showShareOverlay = ref(false)
+const inviteTotal = ref<number | null>(null)
 
 const showLanguagePicker = ref(false)
 const languageValues = ref<Array<string>>([locale.value])
@@ -54,6 +59,34 @@ async function onLogout() {
   await userStore.logout()
   await router.replace('/login')
 }
+
+const inviteCountLabel = computed(() => {
+  if (inviteTotal.value == null)
+    return ''
+  return t('invite.peopleCount', { n: inviteTotal.value })
+})
+
+async function openInviteShare() {
+  if (!userStore.userInfo?.inviteCode) {
+    try {
+      await userStore.info()
+    }
+    catch {
+      /* 仍尝试打开弹层，链接里可无 inviteCode */
+    }
+  }
+  showShareOverlay.value = true
+}
+
+onMounted(async () => {
+  try {
+    const data = await getMyInvitationsSummary()
+    inviteTotal.value = data.total
+  }
+  catch {
+    inviteTotal.value = null
+  }
+})
 </script>
 
 <template>
@@ -106,6 +139,18 @@ async function onLogout() {
     <van-cell-group class="my-cells" :border="false" :inset="true">
       <van-cell
         is-link
+        clickable
+        :title="t('invite.inviteFriends')"
+        @click="openInviteShare"
+      />
+      <van-cell
+        is-link
+        :title="t('invite.invitedUsers')"
+        :value="inviteCountLabel"
+        @click="router.push('/my/invitations')"
+      />
+      <van-cell
+        is-link
         :title="t('auth.switchLang')"
         :value="language"
         @click="showLanguagePicker = true"
@@ -118,6 +163,8 @@ async function onLogout() {
       />
     </van-cell-group>
   </div>
+
+  <GlobalShareOverlay v-model="showShareOverlay" />
 
   <van-popup v-model:show="showLanguagePicker" position="bottom" class="my-popup">
     <van-picker

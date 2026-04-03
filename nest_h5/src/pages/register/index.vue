@@ -21,6 +21,7 @@ const form = reactive<RegisterData & { confirm: string }>({
   username: '',
   password: '',
   confirm: '',
+  inviteCode: localStorage.getItem('inviteCode') || '',
 })
 
 async function onSubmit() {
@@ -42,6 +43,7 @@ async function onSubmit() {
       email: form.email.trim(),
       username: form.username.trim(),
       password: form.password,
+      inviteCode: form.inviteCode?.trim() || undefined,
     })
     showSuccessToast(t('auth.registerOk'))
     await router.replace('/login')
@@ -121,6 +123,22 @@ async function onSubmit() {
                 :placeholder="t('auth.username')"
                 class="auth-van-field"
                 :rules="[{ required: true, message: t('auth.usernameRequired') }]"
+              />
+            </div>
+          </div>
+
+          <div class="mb-[12px]">
+            <span
+              class="mb-[5px] block text-[12px] font-semibold leading-[16px] text-[rgba(255,255,255,0.52)]"
+            >{{ t('auth.inviteCode') }}</span>
+            <div class="auth-input-shell">
+              <van-field
+                v-model="form.inviteCode"
+                name="inviteCode"
+                :border="false"
+                autocomplete="off"
+                :placeholder="t('auth.inviteCode')"
+                class="auth-van-field"
               />
             </div>
           </div>

@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
@@ -15,6 +23,10 @@ export class User {
   @IsNotEmpty()
   username: string;
 
+  /** 头像地址（绝对 URL 或站内路径，可为空） */
+  @Column({ type: 'text', nullable: true })
+  avatar: string | null;
+
   @Column()
   @IsNotEmpty()
   password: string;
@@ -24,6 +36,19 @@ export class User {
 
   @Column({ type: 'text', nullable: true })
   privateKey: string;
+
+  @Column({ unique: true, length: 16 })
+  inviteCode: string;
+
+  @Column({ type: 'int', nullable: true })
+  invitedByUserId: number | null;
+
+  @ManyToOne(() => User, (user) => user.invitedUsers, { nullable: true })
+  @JoinColumn({ name: 'invitedByUserId' })
+  invitedBy?: User | null;
+
+  @OneToMany(() => User, (user) => user.invitedBy)
+  invitedUsers?: User[];
 
   @Column({ default: false })
   isVip: boolean;

@@ -11,7 +11,13 @@ export class UserSummaryExposeDto {
   username: string;
 
   @Expose()
+  avatar: string | null;
+
+  @Expose()
   publicKey: string;
+
+  @Expose()
+  inviteCode: string;
 }
 
 /** 登录 / 刷新 统一 data 形态（配合 ApiResponseInterceptor + @Expose） */

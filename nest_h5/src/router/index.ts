@@ -28,6 +28,12 @@ router.beforeEach(async (to: EnhancedRouteLocation) => {
   const routeCacheStore = useRouteCacheStore()
   const userStore = useUserStore()
 
+  // 全局首次进入时，如果 URL 中携带邀请码，则持久化到本地
+  const rawInvite = to.query?.inviteCode
+  if (typeof rawInvite === 'string' && rawInvite && !localStorage.getItem('inviteCode')) {
+    localStorage.setItem('inviteCode', rawInvite)
+  }
+
   routeCacheStore.addRoute(to)
 
   setPageTitle(resolveTitle(to.meta))

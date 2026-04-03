@@ -38,6 +38,35 @@
     "vipHint": "Premium benefits",
     "switchLang": "Language",
     "formSecureHint": "Encrypted in transit",
-    "memberHint": "Standard account"
+    "memberHint": "Standard account",
+    "inviteCode": "Invite code (optional)"
+  },
+  "invite": {
+    "inviteFriends": "Invite friends",
+    "invitedUsers": "People you invited",
+    "invitedUsersTitle": "Invitations",
+    "totalInvitedLabel": "{n} users invited",
+    "peopleCount": "{n} users",
+    "empty": "No invitees yet",
+    "emptyHint": "Share your invite link or code from Account. When someone signs up, they will show up here.",
+    "registeredAt": "Registered",
+    "userId": "User ID",
+    "theirInviteCode": "Their invite code",
+    "shareTitle": "Invite friends",
+    "shareSubtitle": "Share your link or invite code. When they sign up, it counts toward your invites.",
+    "scanToJoin": "Scan to open the invite page",
+    "myInviteCode": "My invite code",
+    "shareLink": "Invite link",
+    "copyCode": "Copy code",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "noCodeYet": "No invite code yet",
+    "viewRecords": "Invitations",
+    "quickCopyLink": "Copy link",
+    "close": "Close",
+    "statTotal": "Invited",
+    "statVip": "VIP",
+    "listSectionTitle": "Invite list",
+    "sortNewest": "Sorted by signup time, newest first"
   }
 }

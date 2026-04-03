@@ -10,6 +10,11 @@ import presetWind3 from '@unocss/preset-wind3'
 import presetRemToPx from '@unocss/preset-rem-to-px'
 
 export default defineConfig({
+  content: {
+    pipeline: {
+      exclude: [/node_modules/, /\/dist\//],
+    },
+  },
   theme: {
     colors: {
       // 一级文字颜色

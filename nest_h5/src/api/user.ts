@@ -9,6 +9,7 @@ export interface RegisterData {
   email: string
   username: string
   password: string
+  inviteCode?: string
 }
 
 export interface AuthSession {
@@ -19,6 +20,7 @@ export interface AuthSession {
     id: number
     email: string
     username: string
+    avatar?: string | null
     publicKey: string
   }
 }
@@ -27,9 +29,11 @@ export interface UserProfile {
   id: number
   email: string
   username: string
+  avatar?: string | null
   publicKey: string
   isVip: boolean
   createdAt: string
+  inviteCode?: string
 }
 
 export interface UserState {
@@ -39,6 +43,7 @@ export interface UserState {
   avatar?: string
   email?: string
   isVip?: boolean
+  inviteCode?: string
 }
 
 export function login(data: LoginData): Promise<AuthSession> {
@@ -59,4 +64,24 @@ export function logout(refresh_token: string): Promise<unknown> {
 
 export function getUserInfo(): Promise<UserProfile> {
   return request.get('/auth/profile') as Promise<UserProfile>
+}
+
+export interface InvitedUserItem {
+  id: number
+  username: string
+  email: string
+  inviteCode: string
+  avatar?: string | null
+  /** 被邀请用户会员状态（后端返回字段） */
+  isVip?: boolean
+  createdAt: string
+}
+
+export interface MyInvitationsSummary {
+  total: number
+  items: InvitedUserItem[]
+}
+
+export function getMyInvitationsSummary(): Promise<MyInvitationsSummary> {
+  return request.get('/users/me/invitations') as Promise<MyInvitationsSummary>
 }

@@ -115,9 +115,11 @@ export class AuthService {
       id: user.id,
       email: user.email,
       username: user.username,
+      avatar: user.avatar,
       publicKey: user.publicKey,
       isVip: user.isVip,
       createdAt: user.createdAt,
+      inviteCode: user.inviteCode,
     };
   }
 
@@ -200,7 +202,9 @@ export class AuthService {
         id: user.id,
         email: user.email,
         username: user.username,
+        avatar: user.avatar,
         publicKey: user.publicKey,
+        inviteCode: user.inviteCode,
       },
     };
   }
