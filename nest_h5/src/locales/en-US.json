@@ -1,0 +1,11 @@
+{
+  "menus": {
+    "wallet": "Wallet",
+    "my": "Account",
+    "404": "404"
+  },
+  "home": {
+    "recharge": "Recharge",
+    "withdraw": "Withdraw"
+  }
+}

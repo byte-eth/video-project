@@ -1,0 +1,70 @@
+{
+  "name": "Nest-website",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Nest-website",
+  "license": "MIT",
+  "scripts": {
+    "dev": "cross-env vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "build:nocheck": "vite build",
+    "build:dev": "vue-tsc --noEmit && vite build --mode=development",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest",
+    "release": "bumpp --commit --push --tag",
+    "prepare": "husky",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@unhead/vue": "~1.11.19",
+    "@vant/touch-emulator": "^1.4.0",
+    "@vueuse/core": "^12.7.0",
+    "axios": "^1.7.9",
+    "pinia": "^3.0.1",
+    "pinia-plugin-persistedstate": "^4.2.0",
+    "vant": "^4.9.17",
+    "vconsole": "^3.15.1",
+    "vue": "^3.5.13",
+    "vue-i18n": "^11.1.1",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@intlify/unplugin-vue-i18n": "^6.0.3",
+    "@types/node": "^22.13.4",
+    "@unocss/preset-rem-to-px": "66.0.0",
+    "@vant/auto-import-resolver": "^1.2.1",
+    "@vitejs/plugin-legacy": "^6.0.1",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "autoprefixer": "^10.4.20",
+    "bumpp": "^10.0.3",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.20.1",
+    "husky": "^9.1.7",
+    "less": "^4.2.2",
+    "postcss-mobile-forever": "^4.4.0",
+    "terser": "^5.39.0",
+    "typescript": "^5.7.3",
+    "unocss": "66.0.0",
+    "unplugin-auto-import": "^19.1.0",
+    "unplugin-vue-components": "^28.2.0",
+    "unplugin-vue-router": "^0.11.2",
+    "vite": "^6.1.0",
+    "vite-plugin-pwa": "^0.21.1",
+    "vite-plugin-sitemap": "^0.7.1",
+    "vite-plugin-vconsole": "^2.1.1",
+    "vitest": "^3.0.6",
+    "vue-tsc": "^2.2.2"
+  },
+  "pnpm": {
+    "allowedDeprecatedVersions": {
+      "glob": "7.2.3",
+      "inflight": "1.0.6",
+      "sourcemap-codec": "1.4.8"
+    }
+  },
+  "resolutions": {
+    "vite": "^6.1.0"
+  }
+}

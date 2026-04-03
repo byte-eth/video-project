@@ -1,0 +1,41 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: #fff;
+  font-size: var(--van-font-size-lg);
+  color-scheme: dark;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
+}
+
+body {
+  // overflow-y: auto;
+}
+
+#app {
+  height: 100%;
+  position: relative;
+  overflow-x: hidden !important;
+  background: #000;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+// 字体
+@font-face {
+  font-family: 'HarmonyOS Sans SC';
+  src: url('../assets/font/HarmonyOS_SansSC_Bold.ttf');
+}
