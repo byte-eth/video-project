@@ -5,36 +5,58 @@ export interface LoginData {
   password: string
 }
 
-export interface LoginRes {
-  token: string
+export interface RegisterData {
+  email: string
+  username: string
+  password: string
+}
+
+export interface AuthSession {
+  access_token: string
+  refresh_token: string
+  expires_in: number
+  user: {
+    id: number
+    email: string
+    username: string
+    publicKey: string
+  }
+}
+
+export interface UserProfile {
+  id: number
+  email: string
+  username: string
+  publicKey: string
+  isVip: boolean
+  createdAt: string
 }
 
 export interface UserState {
   uid?: number
+  nickname?: string
   name?: string
   avatar?: string
+  email?: string
+  isVip?: boolean
 }
 
-export function login(data: LoginData): Promise<any> {
-  return request.post<LoginRes>('/auth/login', data)
+export function login(data: LoginData): Promise<AuthSession> {
+  return request.post('/auth/login', data) as Promise<AuthSession>
 }
 
-export function logout() {
-  return request.post('/user/logout')
+export function register(data: RegisterData): Promise<unknown> {
+  return request.post('/auth/register', data)
 }
 
-export function getUserInfo() {
-  return request<UserState>('/user/me')
+export function refreshSession(refresh_token: string): Promise<AuthSession> {
+  return request.post('/auth/refresh', { refresh_token }) as Promise<AuthSession>
 }
 
-export function getEmailCode(): Promise<any> {
-  return request.get('/user/email-code')
+export function logout(refresh_token: string): Promise<unknown> {
+  return request.post('/auth/logout', { refresh_token })
 }
 
-export function resetPassword(): Promise<any> {
-  return request.post('/user/reset-password')
-}
-
-export function register(): Promise<any> {
-  return request.post('/user/register')
+export function getUserInfo(): Promise<UserProfile> {
+  return request.get('/auth/profile') as Promise<UserProfile>
 }

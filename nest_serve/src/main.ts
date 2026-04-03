@@ -1,8 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@/app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { SerializeInterceptor } from '@/interceptors/serialize.interceptor';
-import { HttpExceptionFilter } from '@/filters/http-exception.filter';
+import { ApiResponseInterceptor } from '@/interceptors/api-response.interceptor';
 import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 import * as helmet from 'helmet';
@@ -34,16 +33,20 @@ async function bootstrap() {
     }),
   );
   
-  // 全局拦截器
-  app.useGlobalInterceptors(new SerializeInterceptor());
-  
-  // 全局异常过滤器
-  app.useGlobalFilters(new HttpExceptionFilter());
-  
+  app.useGlobalInterceptors(new ApiResponseInterceptor());
+
   // CORS配置
   app.enableCors({
     origin: true,
     credentials: true,
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept-Language',
+      'X-App-Language',
+      'X-App-Lang',
+      'X-Internal-Api-Key',
+    ],
   });
   
   // 启动应用

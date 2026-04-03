@@ -1,0 +1,15 @@
+export const ZH_CN: Record<string, string> = {
+  'auth.invalidCredential': '账号密码错误，请检查重试',
+  'auth.pleaseLogin': '请先登录后再操作',
+  'auth.credentialInvalid': '登录凭证无效，请重新登录',
+  'auth.sessionExpired': '登录已失效，请重新登录',
+  'auth.refreshInvalid': '刷新令牌无效或已过期，请重新登录',
+  'auth.refreshWrongType': '登录凭证无效，请重新登录',
+  'auth.refreshRevoked': '刷新令牌已失效，请重新登录',
+  'auth.refreshExpired': '登录已过期，请重新登录',
+  'auth.userGone': '账户不存在或已删除',
+  'internal.notConfigured': '内部接口未配置',
+  'internal.invalidKey': '内部接口密钥无效',
+  'common.clientFallback': '请求无法完成，请检查后重试',
+  'common.serverFallback': '服务繁忙，请稍后重试',
+};

@@ -6,6 +6,7 @@ import useRouteCacheStore from '@/stores/modules/routeCache'
 import { useUserStore } from '@/stores'
 
 import { isLogin } from '@/utils/auth'
+import { i18n } from '@/utils/i18n'
 import setPageTitle from '@/utils/set-page-title'
 
 const router = createRouter({
@@ -17,16 +18,33 @@ const router = createRouter({
 if (import.meta.hot)
   handleHotUpdate(router)
 
-router.beforeEach(async (to: EnhancedRouteLocation) => {
+function resolveTitle(meta: EnhancedRouteLocation['meta']) {
+  if (meta.i18n && typeof meta.i18n === 'string')
+    return i18n.global.t(meta.i18n) as string
+  return meta.title
+}
 
+router.beforeEach(async (to: EnhancedRouteLocation) => {
   const routeCacheStore = useRouteCacheStore()
   const userStore = useUserStore()
 
-  // Route cache
   routeCacheStore.addRoute(to)
 
-  // Set page title
-  setPageTitle(to.meta.title)
+  setPageTitle(resolveTitle(to.meta))
+
+  if (to.meta.requiresAuth && !isLogin()) {
+    return {
+      name: 'login',
+      query: { redirect: to.fullPath },
+    }
+  }
+
+  if ((to.name === 'login' || to.name === 'register') && isLogin()) {
+    const redir = typeof to.query.redirect === 'string' ? to.query.redirect : ''
+    if (redir.startsWith('/') && !redir.startsWith('//'))
+      return { path: redir }
+    return { path: '/' }
+  }
 
   if (isLogin() && !userStore.userInfo?.uid)
     await userStore.info()

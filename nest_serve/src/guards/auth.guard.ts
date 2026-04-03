@@ -1,12 +1,12 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
+import { I18nBizError } from '@/common/exceptions/i18n-biz.error';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import {
+  IS_PUBLIC_KEY,
+  isAuthAnonymousPostPath,
+} from '@/common/constants/public-route';
 import { JwtPayload } from '@/auth/types/jwt-payload.interface';
 import { accessSignOptions } from '@/config/jwt-tokens';
 
@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request & { user?: JwtPayload }>();
 
-    const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
@@ -29,12 +29,18 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
+    const method = request.method;
+    const path = request.path || request.url || '';
+    if (method === 'POST' && isAuthAnonymousPostPath(path)) {
+      return true;
+    }
+
     const authHeader = request.headers.authorization;
     const token =
       authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : authHeader?.split(' ')[1];
 
     if (!token) {
-      throw new UnauthorizedException('Missing access token');
+      throw new I18nBizError('auth.pleaseLogin', HttpStatus.UNAUTHORIZED);
     }
 
     try {
@@ -42,15 +48,15 @@ export class AuthGuard implements CanActivate {
         secret: accessSignOptions().secret as string,
       });
       if (payload.typ === 'refresh') {
-        throw new UnauthorizedException('Use POST /auth/refresh for refresh tokens');
+        throw new I18nBizError('auth.credentialInvalid', HttpStatus.UNAUTHORIZED);
       }
       request.user = payload;
       return true;
     } catch (e) {
-      if (e instanceof UnauthorizedException) {
+      if (e instanceof I18nBizError) {
         throw e;
       }
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new I18nBizError('auth.sessionExpired', HttpStatus.UNAUTHORIZED);
     }
   }
 }

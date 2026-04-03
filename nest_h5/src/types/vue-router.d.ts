@@ -6,6 +6,8 @@ declare module 'vue-router' {
     i18n?: string
     /** keepalive */
     keepAlive?: boolean
+    /** 需要登录 */
+    requiresAuth?: boolean
   }
 }
 export {}

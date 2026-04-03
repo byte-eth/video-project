@@ -8,5 +8,37 @@
   "home": {
     "recharge": "充值",
     "withdraw": "提现"
+  },
+  "auth": {
+    "loginTitle": "登录",
+    "loginSubtitle": "欢迎回来，使用邮箱登录你的账户",
+    "registerTitle": "注册",
+    "registerSubtitle": "创建账户以继续使用服务",
+    "email": "邮箱",
+    "username": "用户名",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出登录",
+    "noAccount": "还没有账号？",
+    "hasAccount": "已有账号？",
+    "goRegister": "去注册",
+    "goLogin": "去登录",
+    "fillAll": "请填写完整信息",
+    "emailRequired": "请填写邮箱",
+    "usernameRequired": "请填写用户名",
+    "passwordRequired": "请填写密码",
+    "passwordMin": "密码至少 8 位",
+    "passwordMismatch": "两次密码不一致",
+    "registerOk": "注册成功，请登录",
+    "logoutConfirmTitle": "退出登录",
+    "logoutConfirmMsg": "确定要退出当前账户吗？",
+    "vipBadge": "VIP 会员",
+    "memberBadge": "普通会员",
+    "vipHint": "尊享特权与专属服务",
+    "switchLang": "切换语言",
+    "formSecureHint": "信息传输已加密保护",
+    "memberHint": "享受基础账户功能"
   }
 }

@@ -1,8 +1,5 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { I18nBizError } from '@/common/exceptions/i18n-biz.error';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -43,7 +40,7 @@ export class AuthService {
     const user = await this.validateUser(email, password);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new I18nBizError('auth.invalidCredential', HttpStatus.BAD_REQUEST);
     }
 
     const session = await this.issueTokensForUser(user);
@@ -58,22 +55,22 @@ export class AuthService {
         { secret: refreshVerifySecret() },
       );
     } catch {
-      throw new UnauthorizedException('Invalid or expired refresh token');
+      throw new I18nBizError('auth.refreshInvalid', HttpStatus.UNAUTHORIZED);
     }
 
     if (payload.typ !== 'refresh') {
-      throw new UnauthorizedException('Invalid token type');
+      throw new I18nBizError('auth.refreshWrongType', HttpStatus.UNAUTHORIZED);
     }
 
     const row = await this.refreshRepo.findOne({
       where: { jti: payload.jti },
     });
     if (!row) {
-      throw new UnauthorizedException('Refresh token revoked or reused');
+      throw new I18nBizError('auth.refreshRevoked', HttpStatus.UNAUTHORIZED);
     }
     if (row.expiresAt.getTime() < Date.now()) {
       await this.refreshRepo.delete({ id: row.id });
-      throw new UnauthorizedException('Refresh token expired');
+      throw new I18nBizError('auth.refreshExpired', HttpStatus.UNAUTHORIZED);
     }
 
     let user: User;
@@ -82,7 +79,7 @@ export class AuthService {
     } catch (e) {
       if (e instanceof NotFoundException) {
         await this.refreshRepo.delete({ id: row.id });
-        throw new UnauthorizedException('User no longer exists');
+        throw new I18nBizError('auth.userGone', HttpStatus.UNAUTHORIZED);
       }
       throw e;
     }

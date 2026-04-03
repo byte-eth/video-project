@@ -1,157 +1,230 @@
-import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import axios from 'axios'
-import { showNotify, showLoadingToast } from 'vant'
-import { clearToken, getToken } from './auth'
+import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosHeaders } from 'axios'
+import { showLoadingToast, showNotify } from 'vant'
+import { clearToken, getToken } from '@/utils/auth'
+import { locale as appLanguage } from '@/utils/i18n'
 
-export const requestPost = (url: string, params?: any, loadingMsg: string = "", showError: boolean = true): Promise<any> => {
-  return new Promise(function (resolve, reject) {
+/** 与后端约定：仅 200 / 400 / 500 */
+export const API_CODE_OK = 200
+export const API_CODE_CLIENT = 400
+export const API_CODE_SERVER = 500
+
+export interface ApiEnvelope<T = unknown> {
+  code: number
+  data: T | null
+  msg: string
+}
+
+export function isApiEnvelope(x: unknown): x is ApiEnvelope {
+  return (
+    x !== null
+    && typeof x === 'object'
+    && 'code' in x
+    && typeof (x as ApiEnvelope).code === 'number'
+    && 'data' in x
+    && 'msg' in x
+    && typeof (x as ApiEnvelope).msg === 'string'
+  )
+}
+
+/** 无 redirectLogin 时的兜底（旧后端或校验类英文提示） */
+const LOGIN_REQUIRED_HINTS = [
+  '请先登录', '登录已失效', '登录凭证无效',
+  'Please sign in', 'session has expired', 'Invalid credentials', 'sign in again',
+]
+
+function shouldRedirectToLogin(body: ApiEnvelope) {
+  if (body.code !== API_CODE_CLIENT)
+    return false
+  const d = body.data as { redirectLogin?: boolean } | null | undefined
+  if (d && typeof d === 'object' && d.redirectLogin === true)
+    return true
+  return LOGIN_REQUIRED_HINTS.some(h => body.msg.includes(h))
+}
+
+function handleBusinessFailure(body: ApiEnvelope) {
+  const msg = body.msg || '请求失败'
+  if (shouldRedirectToLogin(body)) {
+    showNotify({ type: 'danger', message: msg })
+    clearToken()
+    const base = import.meta.env.BASE_URL || '/'
+    const loginPath = base.endsWith('/')
+      ? `${base}login`
+      : `${base}/login`
+    location.replace(loginPath)
+    return
+  }
+  showNotify({
+    type: 'danger',
+    message: msg,
+  })
+}
+
+function toFormBody(params?: Record<string, unknown>) {
+  if (!params)
+    return undefined
+  const sp = new URLSearchParams()
+  for (const [k, v] of Object.entries(params)) {
+    if (v != null && v !== '')
+      sp.set(k, String(v))
+  }
+  return sp
+}
+
+export const requestPost = (
+  url: string,
+  params?: Record<string, unknown>,
+  loadingMsg: string = '',
+  showError: boolean = true,
+): Promise<any> => {
+  return new Promise((resolve, reject) => {
     let toast = null
-    if (loadingMsg != "") {
-      toast = showLoadingToast({ duration: 60000, message: loadingMsg, forbidClick: true });
+    if (loadingMsg !== '') {
+      toast = showLoadingToast({ duration: 60000, message: loadingMsg, forbidClick: true })
     }
-    request.postForm(url, params).then((res: any) => {
-      if (toast != null) toast.close()
-      if (res.code && res.code != 0) {
-        if (showError) {
-          showNotify({
-            type: 'warning',
-            message: res.msg,
-          })
+    const body = toFormBody(params)
+    request
+      .post(url, body, {
+        headers: body
+          ? { 'Content-Type': 'application/x-www-form-urlencoded' }
+          : undefined,
+      })
+      .then((res: any) => {
+        if (toast != null)
+          toast.close()
+        resolve(res)
+      })
+      .catch((err) => {
+        if (toast != null)
+          toast.close()
+        if (err && err.code === 'ERR_CANCELED')
+          return
+        if (showError && !isApiEnvelope(err)) {
+          const data = err.response?.data
+          const msg = isApiEnvelope(data)
+            ? data.msg
+            : (data?.msg || data?.error || err.message || '网络异常')
+          showNotify({ type: 'danger', message: msg })
         }
-        reject(res)
-      }
-      resolve(res.data)
-    }).catch((err) => {
-      if (toast != null) toast.close()
-      if (err && err.code == "ERR_CANCELED") return
-      if (err.response?.data?.error && showError) {
-        showNotify({
-          type: 'danger',
-          message: err.response?.data?.error,
-        })
-      }
-      reject(err.response?.data)
-    })
+        reject(err)
+      })
   })
 }
 
-export const requestGet = (url: string, params?: any, loadingMsg: string = ""): Promise<any> => {
-  return new Promise(function (resolve, reject) {
+export const requestGet = (url: string, params?: any, loadingMsg: string = ''): Promise<any> => {
+  return new Promise((resolve, reject) => {
     let toast = null
-    if (loadingMsg != "") {
-      toast = showLoadingToast({ duration: 60000, message: loadingMsg, forbidClick: true });
+    if (loadingMsg !== '') {
+      toast = showLoadingToast({ duration: 60000, message: loadingMsg, forbidClick: true })
     }
-    request.get(url, { params }).then((res: any) => {
-      if (toast != null) toast.close()
-      if (res.code && res.code != 0) {
-        showNotify({
-          type: 'warning',
-          message: res.msg,
-        })
-        reject(res)
-      }
-      resolve(res.data)
-    }).catch((err) => {
-      if (toast != null) toast.close()
-      if (err && err.code == "ERR_CANCELED") return
-      if (err.response?.data?.error) {
-        showNotify({
-          type: 'danger',
-          message: err.response?.data?.error,
-        })
-      }
-      reject(err.response.data)
-    })
+    request
+      .get(url, { params })
+      .then((res: any) => {
+        if (toast != null)
+          toast.close()
+        resolve(res)
+      })
+      .catch((err) => {
+        if (toast != null)
+          toast.close()
+        if (err && err.code === 'ERR_CANCELED')
+          return
+        if (!isApiEnvelope(err)) {
+          const data = err.response?.data
+          const msg = isApiEnvelope(data)
+            ? data.msg
+            : (data?.msg || data?.error || err.message || '网络异常')
+          showNotify({ type: 'danger', message: msg })
+        }
+        reject(err)
+      })
   })
 }
 
-// 这里是用于设定请求后端时，所用的 Token KEY
-// 可以根据自己的需要修改，常见的如 Access-Token，Authorization
-// 需要注意的是，请尽量保证使用中横线`-` 来作为分隔符，
-// 避免被 nginx 等负载均衡器丢弃了自定义的请求头
 export const REQUEST_TOKEN_KEY = 'Authorization'
 
-// 创建 axios 实例
 const request = axios.create({
-  // API 请求的默认前缀
   baseURL: import.meta.env.VITE_APP_API_BASE_URL,
-  timeout: 30000, // 请求超时时间
+  timeout: 30000,
 })
 
-// 存储所有未完成的请求
-const pendingRequests = new Map();
-// 生成唯一请求键
-const generateReqKey = (config) => {
-  const { method, url, params, data } = config;
-  return [method, url, JSON.stringify(params), JSON.stringify(data)].join('&');
-};
+const pendingRequests = new Map<string, () => void>()
+const generateReqKey = (config: InternalAxiosRequestConfig) => {
+  const { method, url, params, data } = config
+  return [method, url, JSON.stringify(params), JSON.stringify(data)].join('&')
+}
 
-// 请求拦截器
 function requestHandler(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig | Promise<InternalAxiosRequestConfig> {
-  let savedToken = getToken()
-  // 如果 token 存在
-  // 让每个请求携带自定义 token, 请根据实际情况修改
-  if (savedToken)
-    config.headers[REQUEST_TOKEN_KEY] = savedToken
+  const lang = appLanguage.value || 'zh-CN'
+  const headers = AxiosHeaders.from(config.headers ?? {})
+  headers.set('Accept-Language', lang)
+  headers.set('X-App-Language', lang)
+  config.headers = headers
 
-  // 生成请求键
-  const requestKey = generateReqKey(config);
-  // 如果存在相同的请求，取消上一次的请求
-  if (pendingRequests.has(requestKey)) {
-    const cancel = pendingRequests.get(requestKey);
-    cancel();
-    pendingRequests.delete(requestKey); // 删除旧请求
+  const savedToken = getToken()
+  if (savedToken) {
+    const value = savedToken.startsWith('Bearer ')
+      ? savedToken
+      : `Bearer ${savedToken}`
+    config.headers[REQUEST_TOKEN_KEY] = value
   }
-  // 设置新的CancelToken
+
+  const requestKey = generateReqKey(config)
+  if (pendingRequests.has(requestKey)) {
+    const cancel = pendingRequests.get(requestKey)!
+    cancel()
+    pendingRequests.delete(requestKey)
+  }
   config.cancelToken = new axios.CancelToken((cancel) => {
-    pendingRequests.set(requestKey, cancel); // 存储新的请求
-  });
+    pendingRequests.set(requestKey, cancel)
+  })
   return config
 }
 
-// Add a request interceptor
-request.interceptors.request.use(requestHandler, errorHandler)
+function responseHandler(response: AxiosResponse) {
+  const requestKey = generateReqKey(response.config)
+  pendingRequests.delete(requestKey)
+  const body = response.data
 
-// 响应拦截器
-function responseHandler(response: { data: any }) {
-  const requestKey = generateReqKey(response.data);
-  pendingRequests.delete(requestKey); // 请求成功后移除请求
-  return response.data
+  if (isApiEnvelope(body)) {
+    if (body.code !== API_CODE_OK) {
+      handleBusinessFailure(body)
+      return Promise.reject(body)
+    }
+    return body.data
+  }
+
+  return body
 }
 
-// Add a response interceptor
+request.interceptors.request.use(requestHandler, errorHandler)
 request.interceptors.response.use(responseHandler, errorHandler)
 
-export type RequestError = AxiosError<{
-  msg?: string
-  data?: any
-  errorMessage?: string
-}>
+export type RequestError = AxiosError<ApiEnvelope | { msg?: string, error?: string }>
 
-// 异常拦截处理器
 function errorHandler(error: RequestError): Promise<any> {
-  if (error.response) {
-    const { data = {}, status, statusText } = error.response
-    // 403 无权限
-    if (status === 403) {
-      showNotify({
-        type: 'danger',
-        message: (data && data.msg) || statusText,
-      })
-    }
-    // 401 未登录/未授权
-    if (status === 401) {
-      showNotify({
-        type: 'danger',
-        message: 'Authorization verification failed',
-      })
-      clearToken()
-      location.replace('/login')
-    }
-
-    const requestKey = generateReqKey(error.config);
-    pendingRequests.delete(requestKey); // 请求失败后移除请求
+  if (!error.response) {
+    if (error.code !== 'ERR_CANCELED')
+      showNotify({ type: 'danger', message: error.message || '网络不可用' })
+    return Promise.reject(error)
   }
+
+  const { data, statusText } = error.response
+  const requestKey = generateReqKey(error.config!)
+  pendingRequests.delete(requestKey)
+
+  if (isApiEnvelope(data)) {
+    handleBusinessFailure(data)
+    return Promise.reject(data)
+  }
+
+  const msg = (data as { msg?: string })?.msg
+    || (data as { error?: string })?.error
+    || statusText
+    || '网络异常'
+
+  showNotify({ type: 'danger', message: msg })
+
   return Promise.reject(error)
 }
 

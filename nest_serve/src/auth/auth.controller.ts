@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { AuthService } from '@/auth/auth.service';
 import { LoginDto } from '@/auth/dto/login.dto';
 import { RefreshTokenDto } from '@/auth/dto/refresh-token.dto';
@@ -11,27 +11,26 @@ import { JwtPayload } from '@/auth/types/jwt-payload.interface';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
   @Public()
+  @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
-  @Post('refresh')
   @Public()
+  @Post('refresh')
   async refresh(@Body() body: RefreshTokenDto) {
     return this.authService.refresh(body.refresh_token);
   }
 
-  @Post('logout')
   @Public()
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('logout')
   async logout(@Body() body: RefreshTokenDto) {
     await this.authService.logout(body.refresh_token);
   }
 
-  @Post('register')
   @Public()
+  @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto);
   }

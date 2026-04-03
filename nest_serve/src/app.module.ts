@@ -1,5 +1,5 @@
 import { Module, MiddlewareConsumer } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -8,10 +8,13 @@ import { UsersModule } from '@/users/users.module';
 import { jwtConfig } from '@/config/jwt.config';
 import { csrfMiddleware } from '@/middleware/csrf.middleware';
 import { AuthGuard } from '@/guards/auth.guard';
+import { HttpExceptionFilter } from '@/filters/http-exception.filter';
+import { I18nModule } from '@/i18n/i18n.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    I18nModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -39,6 +42,10 @@ import { AuthGuard } from '@/guards/auth.guard';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
     },
   ],
 })

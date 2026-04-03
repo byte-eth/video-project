@@ -14,7 +14,7 @@ export class UserSummaryExposeDto {
   publicKey: string;
 }
 
-/** 登录 / 刷新 统一响应（配合 SerializeInterceptor @Expose） */
+/** 登录 / 刷新 统一 data 形态（配合 ApiResponseInterceptor + @Expose） */
 export class AuthSessionResponseDto {
   @Expose()
   access_token: string;

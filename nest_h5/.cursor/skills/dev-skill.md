@@ -46,7 +46,7 @@ src/
 ├── utils/            # request.ts, auth.ts, i18n.ts, walletconnect.ts, contracts/
 ├── config/           # Route whitelist, app config
 ├── locales/          # zh-CN.json, en-US.json
-├── styles/           # app.less, var.less, font.less
+├── styles/           # app.less, reset.less, font.less
 ├── types/            # Auto-generated .d.ts files
 └── assets/           # Images and static resources
 ```

@@ -7,5 +7,37 @@
   "home": {
     "recharge": "Recharge",
     "withdraw": "Withdraw"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Welcome back. Sign in with your email.",
+    "registerTitle": "Create account",
+    "registerSubtitle": "Sign up to continue.",
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "login": "Sign in",
+    "register": "Sign up",
+    "logout": "Sign out",
+    "noAccount": "No account?",
+    "hasAccount": "Already have an account?",
+    "goRegister": "Register",
+    "goLogin": "Sign in",
+    "fillAll": "Please fill in all fields",
+    "emailRequired": "Email is required",
+    "usernameRequired": "Username is required",
+    "passwordRequired": "Password is required",
+    "passwordMin": "Password must be at least 8 characters",
+    "passwordMismatch": "Passwords do not match",
+    "registerOk": "Account created. Please sign in.",
+    "logoutConfirmTitle": "Sign out",
+    "logoutConfirmMsg": "Are you sure you want to sign out?",
+    "vipBadge": "VIP",
+    "memberBadge": "Member",
+    "vipHint": "Premium benefits",
+    "switchLang": "Language",
+    "formSecureHint": "Encrypted in transit",
+    "memberHint": "Standard account"
   }
 }

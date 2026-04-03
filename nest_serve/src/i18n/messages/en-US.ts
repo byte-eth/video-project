@@ -1,0 +1,15 @@
+export const EN_US: Record<string, string> = {
+  'auth.invalidCredential': 'Incorrect email or password. Please check and try again.',
+  'auth.pleaseLogin': 'Please sign in to continue.',
+  'auth.credentialInvalid': 'Invalid credentials. Please sign in again.',
+  'auth.sessionExpired': 'Your session has expired. Please sign in again.',
+  'auth.refreshInvalid': 'Refresh token is invalid or expired. Please sign in again.',
+  'auth.refreshWrongType': 'Invalid credentials. Please sign in again.',
+  'auth.refreshRevoked': 'Refresh token is no longer valid. Please sign in again.',
+  'auth.refreshExpired': 'Session expired. Please sign in again.',
+  'auth.userGone': 'This account no longer exists.',
+  'internal.notConfigured': 'Internal API is not configured.',
+  'internal.invalidKey': 'Invalid internal API key.',
+  'common.clientFallback': 'The request could not be completed. Please check and try again.',
+  'common.serverFallback': 'Something went wrong. Please try again later.',
+};

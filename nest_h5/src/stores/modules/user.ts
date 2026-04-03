@@ -1,34 +1,42 @@
 import { defineStore } from 'pinia'
-import type { LoginData, UserState } from '@/api/user'
-import { clearToken, setToken } from '@/utils/auth'
+import type { LoginData, RegisterData, UserState } from '@/api/user'
+import { clearToken, getRefreshToken, setRefreshToken, setToken } from '@/utils/auth'
 
 import {
-  getEmailCode,
   getUserInfo,
-  resetPassword,
   login as userLogin,
-  logout as userLogout,
+  logout as apiLogout,
   register as userRegister,
 } from '@/api/user'
 
-const InitUserInfo = {
+const InitUserInfo: UserState = {
   uid: 0,
   nickname: '',
-  avatar: '',
+  name: '',
+  email: '',
+  isVip: false,
 }
 
 export const useUserStore = defineStore('user', () => {
   const userInfo = ref<UserState>({ ...InitUserInfo })
 
-  // Set user's information
   const setInfo = (partial: Partial<UserState>) => {
-    userInfo.value = { ...partial }
+    userInfo.value = { ...userInfo.value, ...partial }
   }
 
   const login = async (loginForm: LoginData) => {
     try {
-      const { data } = await userLogin(loginForm)
-      setToken(data.token)
+      const data = await userLogin(loginForm)
+      setToken(data.access_token)
+      setRefreshToken(data.refresh_token)
+      const profile = await getUserInfo()
+      setInfo({
+        uid: profile.id,
+        nickname: profile.username,
+        name: profile.username,
+        email: profile.email,
+        isVip: profile.isVip,
+      })
     }
     catch (error) {
       clearToken()
@@ -38,8 +46,14 @@ export const useUserStore = defineStore('user', () => {
 
   const info = async () => {
     try {
-      const { data } = await getUserInfo()
-      setInfo(data)
+      const data = await getUserInfo()
+      setInfo({
+        uid: data.id,
+        nickname: data.username,
+        name: data.username,
+        email: data.email,
+        isVip: data.isVip,
+      })
     }
     catch (error) {
       clearToken()
@@ -48,8 +62,10 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const logout = async () => {
+    const rt = getRefreshToken()
     try {
-      await userLogout()
+      if (rt)
+        await apiLogout(rt)
     }
     finally {
       clearToken()
@@ -57,28 +73,8 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  const getCode = async () => {
-    try {
-      const data = await getEmailCode()
-      return data
-    }
-    catch {}
-  }
-
-  const reset = async () => {
-    try {
-      const data = await resetPassword()
-      return data
-    }
-    catch {}
-  }
-
-  const register = async () => {
-    try {
-      const data = await userRegister()
-      return data
-    }
-    catch {}
+  const register = async (data: RegisterData) => {
+    return userRegister(data)
   }
 
   return {
@@ -86,9 +82,8 @@ export const useUserStore = defineStore('user', () => {
     info,
     login,
     logout,
-    getCode,
-    reset,
     register,
+    setInfo,
   }
 }, {
   persist: true,
