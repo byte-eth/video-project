@@ -10,6 +10,7 @@ import { csrfMiddleware } from '@/middleware/csrf.middleware';
 import { AuthGuard } from '@/guards/auth.guard';
 import { HttpExceptionFilter } from '@/filters/http-exception.filter';
 import { I18nModule } from '@/i18n/i18n.module';
+import { SecurityModule } from '@/security/security.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { I18nModule } from '@/i18n/i18n.module';
       useFactory: () => jwtConfig,
       inject: [ConfigService],
     }),
+    SecurityModule,
     AuthModule,
     UsersModule,
   ],

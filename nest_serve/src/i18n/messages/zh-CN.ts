@@ -18,4 +18,6 @@ export const ZH_CN: Record<string, string> = {
   'auth.forgotCooldown': '发送过于频繁，请稍后再试',
   'auth.forgotSmtpNotConfigured': '邮件服务未配置，无法发送验证码',
   'auth.forgotMailFailed': '邮件发送失败，请稍后重试',
+  'security.duplicateSubmit': '请勿重复提交，请稍后再试',
+  'security.loginBlocked': '登录失败次数过多，请稍后再试',
 };

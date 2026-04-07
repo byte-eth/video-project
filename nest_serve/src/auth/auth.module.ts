@@ -12,9 +12,11 @@ import { RefreshToken } from '@/entities/refresh-token.entity';
 import { PasswordResetCode } from '@/entities/password-reset-code.entity';
 import { LoginLogShardService } from '@/auth/login-log-shard.service';
 import { MailService } from '@/auth/mail.service';
+import { SecurityModule } from '@/security/security.module';
 
 @Module({
   imports: [
+    SecurityModule,
     UsersModule,
     TypeOrmModule.forFeature([RefreshToken, PasswordResetCode]),
     JwtModule.register(jwtConfig),

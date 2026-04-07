@@ -27,6 +27,7 @@ import { AuthSessionResponseDto } from '@/auth/dto/auth-session-response.dto';
 import { PasswordResetCode } from '@/entities/password-reset-code.entity';
 import { MailService } from '@/auth/mail.service';
 import { ForgotPasswordResetDto } from '@/auth/dto/forgot-password-reset.dto';
+import { LoginRiskService } from '@/security/login-risk.service';
 
 const FORGOT_CODE_TTL_MS = 10 * 60 * 1000;
 const FORGOT_SEND_COOLDOWN_MS = 60 * 1000;
@@ -50,6 +51,7 @@ export class AuthService {
     @InjectRepository(PasswordResetCode)
     private readonly resetCodeRepo: Repository<PasswordResetCode>,
     private readonly loginLogShard: LoginLogShardService,
+    private readonly loginRisk: LoginRiskService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -63,6 +65,9 @@ export class AuthService {
   async login(loginDto: LoginDto, auditCtx?: LoginAuditContext) {
     const { email, password } = loginDto;
     const emailNorm = email.trim().toLowerCase();
+    const clientIp = auditCtx?.ip ?? null;
+    this.loginRisk.assertLoginAllowed(clientIp);
+
     const user = await this.validateUser(email, password);
 
     if (!user) {
@@ -73,18 +78,21 @@ export class AuthService {
         emailNorm,
         success: false,
         failureReason: existing ? 'bad_password' : 'unknown_account',
-        ip: auditCtx?.ip ?? null,
+        ip: clientIp,
         userAgent: auditCtx?.userAgent ?? null,
       });
+      this.loginRisk.onLoginFailure(clientIp);
       throw new I18nBizError('auth.invalidCredential', HttpStatus.BAD_REQUEST);
     }
+
+    this.loginRisk.onLoginSuccess(clientIp);
 
     await this.safeInsertLoginLog({
       userId: user.id,
       emailNorm,
       success: true,
       failureReason: null,
-      ip: auditCtx?.ip ?? null,
+      ip: clientIp,
       userAgent: auditCtx?.userAgent ?? null,
     });
 

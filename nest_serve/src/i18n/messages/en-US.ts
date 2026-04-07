@@ -18,4 +18,6 @@ export const EN_US: Record<string, string> = {
   'auth.forgotCooldown': 'Too many requests. Please wait a moment.',
   'auth.forgotSmtpNotConfigured': 'Email is not configured on the server.',
   'auth.forgotMailFailed': 'Failed to send email. Please try again later.',
+  'security.duplicateSubmit': 'Duplicate submission detected. Please wait a moment.',
+  'security.loginBlocked': 'Too many failed sign-in attempts. Please try again later.',
 };
