@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { User } from '@/entities/user.entity';
 import { CreateUserDto } from '@/users/dto/create-user.dto';
 import { generateKeyPairSync } from 'crypto';
@@ -75,12 +76,28 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
+  /** 邮箱不区分大小写（用于找回密码等） */
+  async findOneByEmailNormalized(email: string): Promise<User | undefined> {
+    const e = email.trim().toLowerCase();
+    const row = await this.usersRepository
+      .createQueryBuilder('u')
+      .where('LOWER(TRIM(u.email)) = :e', { e })
+      .getOne();
+    return row ?? undefined;
+  }
+
   async findOneById(id: number): Promise<User> {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
+  }
+
+  /** 重置密码（不走 @BeforeInsert，直接写入 bcrypt 哈希） */
+  async setPasswordPlain(userId: number, plainPassword: string): Promise<void> {
+    const hash = await bcrypt.hash(plainPassword, 10);
+    await this.usersRepository.update({ id: userId }, { password: hash });
   }
 
   /**

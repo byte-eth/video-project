@@ -40,7 +40,17 @@
     "switchLang": "切换语言",
     "formSecureHint": "信息传输已加密保护",
     "memberHint": "享受基础账户功能",
-    "inviteCode": "邀请码（选填）"
+    "inviteCode": "邀请码（选填）",
+    "forgotPassword": "忘记密码？",
+    "forgotTitle": "忘记密码",
+    "forgotSubtitle": "通过邮箱验证码重置登录密码",
+    "verificationCode": "验证码",
+    "sendCode": "获取验证码",
+    "resendAfter": "{n} 秒后可重发",
+    "forgotCodeSentHint": "若该邮箱已注册，您将很快收到验证码，请查收邮箱（含垃圾箱）",
+    "forgotResetOk": "密码已重置，请使用新密码登录",
+    "codeRequired": "请填写 6 位验证码",
+    "resetPassword": "重置密码"
   },
   "invite": {
     "inviteFriends": "邀请好友",

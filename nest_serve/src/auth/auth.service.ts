@@ -3,7 +3,8 @@ import { I18nBizError } from '@/common/exceptions/i18n-biz.error';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { randomUUID } from 'crypto';
+import { createHmac, randomInt, randomUUID } from 'crypto';
+import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
 import { UsersService } from '@/users/users.service';
 import { LoginDto } from '@/auth/dto/login.dto';
@@ -17,14 +18,24 @@ import {
   refreshVerifySecret,
 } from '@/config/jwt-tokens';
 import { AuthSessionResponseDto } from '@/auth/dto/auth-session-response.dto';
+import { PasswordResetCode } from '@/entities/password-reset-code.entity';
+import { MailService } from '@/auth/mail.service';
+import { ForgotPasswordResetDto } from '@/auth/dto/forgot-password-reset.dto';
+
+const FORGOT_CODE_TTL_MS = 10 * 60 * 1000;
+const FORGOT_SEND_COOLDOWN_MS = 60 * 1000;
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly mailService: MailService,
     @InjectRepository(RefreshToken)
     private refreshRepo: Repository<RefreshToken>,
+    @InjectRepository(PasswordResetCode)
+    private readonly resetCodeRepo: Repository<PasswordResetCode>,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -107,6 +118,90 @@ export class AuthService {
 
   async register(createUserDto: any) {
     return this.usersService.create(createUserDto);
+  }
+
+  private resetCodePepper(): string {
+    return (
+      this.configService.get<string>('RESET_CODE_PEPPER') ||
+      this.configService.get<string>('JWT_SECRET') ||
+      'dev-reset-code-pepper'
+    );
+  }
+
+  private hashResetCode(emailNorm: string, code: string): string {
+    return createHmac('sha256', this.resetCodePepper())
+      .update(`${emailNorm}:${code}`)
+      .digest('hex');
+  }
+
+  private genSixDigitCode(): string {
+    return String(randomInt(0, 1_000_000)).padStart(6, '0');
+  }
+
+  /**
+   * 未注册邮箱也返回成功，避免被用来枚举账号。
+   */
+  async forgotPasswordSend(emailRaw: string, lang: string): Promise<void> {
+    if (!this.mailService.isConfigured()) {
+      throw new I18nBizError(
+        'auth.forgotSmtpNotConfigured',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const email = emailRaw.trim().toLowerCase();
+    const user = await this.usersService.findOneByEmailNormalized(email);
+    if (!user)
+      return;
+
+    const latest = await this.resetCodeRepo.findOne({
+      where: { email },
+      order: { id: 'DESC' },
+    });
+    if (
+      latest &&
+      Date.now() - new Date(latest.createdAt).getTime() < FORGOT_SEND_COOLDOWN_MS
+    ) {
+      throw new I18nBizError('auth.forgotCooldown', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.resetCodeRepo.delete({ email });
+    const code = this.genSixDigitCode();
+    const codeHash = this.hashResetCode(email, code);
+    await this.resetCodeRepo.save(
+      this.resetCodeRepo.create({
+        email,
+        codeHash,
+        expiresAt: new Date(Date.now() + FORGOT_CODE_TTL_MS),
+      }),
+    );
+
+    try {
+      await this.mailService.sendPasswordResetCode(user.email, code, lang);
+    } catch {
+      await this.resetCodeRepo.delete({ email });
+      throw new I18nBizError('auth.forgotMailFailed', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async forgotPasswordReset(dto: ForgotPasswordResetDto): Promise<void> {
+    const email = dto.email.trim().toLowerCase();
+    const row = await this.resetCodeRepo.findOne({
+      where: { email },
+      order: { id: 'DESC' },
+    });
+    if (!row || row.expiresAt.getTime() < Date.now()) {
+      throw new I18nBizError('auth.forgotCodeInvalid', HttpStatus.BAD_REQUEST);
+    }
+    if (this.hashResetCode(email, dto.code) !== row.codeHash) {
+      throw new I18nBizError('auth.forgotCodeInvalid', HttpStatus.BAD_REQUEST);
+    }
+    const user = await this.usersService.findOneByEmailNormalized(email);
+    if (!user) {
+      await this.resetCodeRepo.delete({ email });
+      throw new I18nBizError('auth.forgotCodeInvalid', HttpStatus.BAD_REQUEST);
+    }
+    await this.usersService.setPasswordPlain(user.id, dto.newPassword);
+    await this.resetCodeRepo.delete({ email });
   }
 
   async getProfile(userId: number) {

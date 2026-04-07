@@ -54,6 +54,26 @@ export function register(data: RegisterData): Promise<unknown> {
   return request.post('/auth/register', data)
 }
 
+export function forgotPasswordSendCode(email: string): Promise<{ ok: boolean }> {
+  return request.post('/auth/forgot-password/send-code', { email }) as Promise<{
+    ok: boolean
+  }>
+}
+
+export interface ForgotPasswordResetPayload {
+  email: string
+  code: string
+  newPassword: string
+}
+
+export function forgotPasswordReset(
+  data: ForgotPasswordResetPayload,
+): Promise<{ ok: boolean }> {
+  return request.post('/auth/forgot-password/reset', data) as Promise<{
+    ok: boolean
+  }>
+}
+
 export function refreshSession(refresh_token: string): Promise<AuthSession> {
   return request.post('/auth/refresh', { refresh_token }) as Promise<AuthSession>
 }

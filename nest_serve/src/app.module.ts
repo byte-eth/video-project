@@ -13,7 +13,11 @@ import { I18nModule } from '@/i18n/i18n.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // 先加载 .env，再加载 .env.secrets；后者同名变量覆盖前者（密钥建议只放 .env.secrets）
+      envFilePath: ['.env', '.env.secrets'],
+    }),
     I18nModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

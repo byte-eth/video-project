@@ -8,6 +8,8 @@ export const IS_PUBLIC_KEY = 'isPublic';
 export const AUTH_POST_ANONYMOUS_SUFFIXES = [
   '/auth/login',
   '/auth/register',
+  '/auth/forgot-password/send-code',
+  '/auth/forgot-password/reset',
   // '/auth/refresh',
   // '/auth/logout',
 ] as const;

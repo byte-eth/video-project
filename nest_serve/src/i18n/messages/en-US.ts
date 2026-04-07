@@ -12,4 +12,10 @@ export const EN_US: Record<string, string> = {
   'internal.invalidKey': 'Invalid internal API key.',
   'common.clientFallback': 'The request could not be completed. Please check and try again.',
   'common.serverFallback': 'Something went wrong. Please try again later.',
+  'auth.forgotCodeSent':
+    'If this email is registered, you will receive a code shortly. Check spam as well.',
+  'auth.forgotCodeInvalid': 'Invalid or expired code. Please request a new one.',
+  'auth.forgotCooldown': 'Too many requests. Please wait a moment.',
+  'auth.forgotSmtpNotConfigured': 'Email is not configured on the server.',
+  'auth.forgotMailFailed': 'Failed to send email. Please try again later.',
 };

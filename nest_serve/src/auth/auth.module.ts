@@ -9,14 +9,21 @@ import { jwtConfig } from '@/config/jwt.config';
 import { InternalApiKeyGuard } from '@/guards/internal-api-key.guard';
 import { LoadCurrentUserInterceptor } from '@/common/interceptors/load-current-user.interceptor';
 import { RefreshToken } from '@/entities/refresh-token.entity';
+import { PasswordResetCode } from '@/entities/password-reset-code.entity';
+import { MailService } from '@/auth/mail.service';
 
 @Module({
   imports: [
     UsersModule,
-    TypeOrmModule.forFeature([RefreshToken]),
+    TypeOrmModule.forFeature([RefreshToken, PasswordResetCode]),
     JwtModule.register(jwtConfig),
   ],
-  providers: [AuthService, InternalApiKeyGuard, LoadCurrentUserInterceptor],
+  providers: [
+    AuthService,
+    MailService,
+    InternalApiKeyGuard,
+    LoadCurrentUserInterceptor,
+  ],
   controllers: [AuthController, InternalAuthController],
   exports: [AuthService, LoadCurrentUserInterceptor],
 })

@@ -12,4 +12,10 @@ export const ZH_CN: Record<string, string> = {
   'internal.invalidKey': '内部接口密钥无效',
   'common.clientFallback': '请求无法完成，请检查后重试',
   'common.serverFallback': '服务繁忙，请稍后重试',
+  'auth.forgotCodeSent':
+    '若该邮箱已注册，您将很快收到验证码邮件，请查收（含垃圾箱）',
+  'auth.forgotCodeInvalid': '验证码无效或已过期，请重新获取',
+  'auth.forgotCooldown': '发送过于频繁，请稍后再试',
+  'auth.forgotSmtpNotConfigured': '邮件服务未配置，无法发送验证码',
+  'auth.forgotMailFailed': '邮件发送失败，请稍后重试',
 };

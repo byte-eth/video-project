@@ -39,7 +39,17 @@
     "switchLang": "Language",
     "formSecureHint": "Encrypted in transit",
     "memberHint": "Standard account",
-    "inviteCode": "Invite code (optional)"
+    "inviteCode": "Invite code (optional)",
+    "forgotPassword": "Forgot password?",
+    "forgotTitle": "Forgot password",
+    "forgotSubtitle": "Reset your password with an email verification code.",
+    "verificationCode": "Verification code",
+    "sendCode": "Send code",
+    "resendAfter": "Resend in {n}s",
+    "forgotCodeSentHint": "If this email is registered, you will receive a code shortly. Check spam too.",
+    "forgotResetOk": "Password updated. Please sign in.",
+    "codeRequired": "Enter the 6-digit code",
+    "resetPassword": "Reset password"
   },
   "invite": {
     "inviteFriends": "Invite friends",

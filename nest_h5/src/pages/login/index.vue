@@ -116,6 +116,14 @@ async function onSubmit() {
                 :rules="[{ required: true, message: t('auth.passwordRequired') }]"
               />
             </div>
+            <div class="mt-[8px] flex justify-end">
+              <router-link
+                to="/forgot-password"
+                class="text-[12px] font-semibold leading-[18px] text-[#f2a332] no-underline active:opacity-[0.8]"
+              >
+                {{ t('auth.forgotPassword') }}
+              </router-link>
+            </div>
           </div>
 
           <div class="pt-[26px]">
