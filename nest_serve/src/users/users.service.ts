@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from '@/entities/user.entity';
 import { CreateUserDto } from '@/users/dto/create-user.dto';
 import { generateKeyPairSync } from 'crypto';
+import { toPageResult } from '@/common/utils/pagination.util';
 
 @Injectable()
 export class UsersService {
@@ -129,9 +130,7 @@ export class UsersService {
       },
     });
 
-    return {
-      total,
-      items: rows.map((u) => ({
+    return toPageResult(rows, total, u => ({
         id: u.id,
         username: u.username,
         email: u.email,
@@ -140,8 +139,7 @@ export class UsersService {
         isVip: u.isVip,
         createdAt:
           u.createdAt instanceof Date ? u.createdAt.toISOString() : String(u.createdAt),
-      })),
-    };
+      }));
   }
 }
     
