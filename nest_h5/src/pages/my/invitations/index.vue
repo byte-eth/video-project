@@ -179,7 +179,7 @@ onMounted(async () => {
         </div>
 
         <template v-else>
-          <header class="mb-[8px] pt-[2px] pr-[2px] pb-0 pl-[2px]">
+          <header class="mb-[16px] pt-[2px] pr-[2px] pb-0 pl-[2px]">
             <div class="flex items-center gap-[10px]">
               <h2 class="m-0 select-none text-[15px] font-bold leading-[22px] tracking-[-0.01em] text-[#ececf1]">
                 {{ t('invite.listSectionTitle') }}
