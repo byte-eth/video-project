@@ -95,6 +95,21 @@ export class UsersService {
     return user;
   }
 
+  async updateProfile(
+    userId: number,
+    payload: { username?: string; avatar?: string },
+  ): Promise<User> {
+    const user = await this.findOneById(userId);
+    const nextUsername = payload.username?.trim();
+    if (nextUsername) {
+      user.username = nextUsername;
+    }
+    if (typeof payload.avatar === 'string') {
+      user.avatar = payload.avatar.trim() || null;
+    }
+    return this.usersRepository.save(user);
+  }
+
   /** 重置密码（不走 @BeforeInsert，直接写入 bcrypt 哈希） */
   async setPasswordPlain(userId: number, plainPassword: string): Promise<void> {
     const hash = await bcrypt.hash(plainPassword, 10);

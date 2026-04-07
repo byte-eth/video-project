@@ -11,6 +11,7 @@ import { AuthGuard } from '@/guards/auth.guard';
 import { HttpExceptionFilter } from '@/filters/http-exception.filter';
 import { I18nModule } from '@/i18n/i18n.module';
 import { SecurityModule } from '@/security/security.module';
+import { UploadsModule } from '@/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { SecurityModule } from '@/security/security.module';
     SecurityModule,
     AuthModule,
     UsersModule,
+    UploadsModule,
   ],
   providers: [
     {

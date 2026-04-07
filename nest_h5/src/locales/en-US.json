@@ -4,10 +4,6 @@
     "my": "Account",
     "404": "404"
   },
-  "home": {
-    "recharge": "Recharge",
-    "withdraw": "Withdraw"
-  },
   "auth": {
     "loginTitle": "Sign in",
     "loginSubtitle": "Welcome back. Sign in with your email.",
@@ -35,10 +31,8 @@
     "logoutConfirmMsg": "Are you sure you want to sign out?",
     "vipBadge": "VIP",
     "memberBadge": "Member",
-    "vipHint": "Premium benefits",
     "switchLang": "Language",
     "formSecureHint": "Encrypted in transit",
-    "memberHint": "Standard account",
     "inviteCode": "Invite code (optional)",
     "forgotPassword": "Forgot password?",
     "forgotTitle": "Forgot password",
@@ -49,7 +43,19 @@
     "forgotCodeSentHint": "If this email is registered, you will receive a code shortly. Check spam too.",
     "forgotResetOk": "Password updated. Please sign in.",
     "codeRequired": "Enter the 6-digit code",
-    "resetPassword": "Reset password"
+    "resetPassword": "Reset password",
+    "save": "Save",
+    "profileEditTitle": "Edit profile",
+    "profileEditSubtitle": "Update your avatar and nickname so friends can recognize you.",
+    "profileUploadAvatar": "Tap to upload avatar",
+    "profileUsernamePlaceholder": "Enter username",
+    "profileUsernameLengthHint": "Username must be 2-12 characters",
+    "profileSaving": "Saving...",
+    "profileSaved": "Username updated",
+    "profileSaveFailed": "Save failed",
+    "profileUploadingAvatar": "Uploading...",
+    "profileAvatarUploaded": "Avatar uploaded",
+    "profileAvatarUploadFailed": "Avatar upload failed"
   },
   "invite": {
     "inviteFriends": "Invite friends",
@@ -59,9 +65,7 @@
     "peopleCount": "{n} users",
     "empty": "No invitees yet",
     "emptyHint": "Share your invite link or code from Account. When someone signs up, they will show up here.",
-    "registeredAt": "Registered",
     "userId": "User ID",
-    "theirInviteCode": "Their invite code",
     "shareTitle": "Invite friends",
     "shareSubtitle": "Share your link or invite code. When they sign up, it counts toward your invites.",
     "scanToJoin": "Scan to open the invite page",
@@ -73,7 +77,6 @@
     "noCodeYet": "No invite code yet",
     "viewRecords": "Invitations",
     "quickCopyLink": "Copy link",
-    "close": "Close",
     "statTotal": "Invited",
     "statVip": "VIP",
     "listSectionTitle": "Invite list",

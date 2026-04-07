@@ -185,7 +185,7 @@ const overlayShellStyle = {
 
         <!-- 邀请码 + 链接 -->
         <div
-          class="mb-[12px] overflow-hidden rounded-[12px] border-[1px] border-solid border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.035)]"
+          class="mb-[24px] overflow-hidden rounded-[12px] border-[1px] border-solid border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.035)]"
         >
           <div class="flex items-center gap-[10px] px-[12px] py-[10px]">
             <div class="min-w-0 flex-1">

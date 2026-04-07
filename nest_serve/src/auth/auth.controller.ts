@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, Req, Patch } from '@nestjs/common';
 import type { Request } from 'express';
 import { AuthService } from '@/auth/auth.service';
 import { LoginDto } from '@/auth/dto/login.dto';
@@ -9,6 +9,7 @@ import { ForgotPasswordResetDto } from '@/auth/dto/forgot-password-reset.dto';
 import { Public } from '@/common/decorators/public.decorator';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { JwtPayload } from '@/auth/types/jwt-payload.interface';
+import { UpdateProfileDto } from '@/auth/dto/update-profile.dto';
 import { resolveRequestLang } from '@/i18n/request-lang.util';
 import {
   resolveClientIp,
@@ -67,5 +68,13 @@ export class AuthController {
   @Get('profile')
   async getCurrentUserProfile(@CurrentUser() user: JwtPayload) {
     return this.authService.getProfile(user.sub);
+  }
+
+  @Patch('profile')
+  async updateCurrentUserProfile(
+    @CurrentUser() user: JwtPayload,
+    @Body() body: UpdateProfileDto,
+  ) {
+    return this.authService.updateProfile(user.sub, body);
   }
 }

@@ -1,13 +1,8 @@
 {
   "menus": {
     "wallet": "钱包",
-    "card": "卡包",
     "my": "账户",
     "404": "404"
-  },
-  "home": {
-    "recharge": "充值",
-    "withdraw": "提现"
   },
   "auth": {
     "loginTitle": "登录",
@@ -36,10 +31,8 @@
     "logoutConfirmMsg": "确定要退出当前账户吗？",
     "vipBadge": "VIP 会员",
     "memberBadge": "普通会员",
-    "vipHint": "尊享特权与专属服务",
     "switchLang": "切换语言",
     "formSecureHint": "信息传输已加密保护",
-    "memberHint": "享受基础账户功能",
     "inviteCode": "邀请码（选填）",
     "forgotPassword": "忘记密码？",
     "forgotTitle": "忘记密码",
@@ -50,7 +43,19 @@
     "forgotCodeSentHint": "若该邮箱已注册，您将很快收到验证码，请查收邮箱（含垃圾箱）",
     "forgotResetOk": "密码已重置，请使用新密码登录",
     "codeRequired": "请填写 6 位验证码",
-    "resetPassword": "重置密码"
+    "resetPassword": "重置密码",
+    "save": "保存",
+    "profileEditTitle": "编辑资料",
+    "profileEditSubtitle": "更新头像和昵称，让朋友更容易认出你",
+    "profileUploadAvatar": "点击上传头像",
+    "profileUsernamePlaceholder": "请输入用户名",
+    "profileUsernameLengthHint": "用户名长度需在 2-12 个字符",
+    "profileSaving": "保存中...",
+    "profileSaved": "用户名已更新",
+    "profileSaveFailed": "保存失败",
+    "profileUploadingAvatar": "上传中...",
+    "profileAvatarUploaded": "头像上传成功",
+    "profileAvatarUploadFailed": "头像上传失败"
   },
   "invite": {
     "inviteFriends": "邀请好友",
@@ -60,9 +65,7 @@
     "peopleCount": "{n} 人",
     "empty": "还没有好友通过你的邀请注册",
     "emptyHint": "去「账户」分享邀请链接或邀请码，好友打开并完成注册后会出现在这里。",
-    "registeredAt": "注册时间",
     "userId": "用户 ID",
-    "theirInviteCode": "对方的邀请码",
     "shareTitle": "邀请好友",
     "shareSubtitle": "把链接或邀请码发给好友，对方打开并完成注册后即计入你的邀请。",
     "scanToJoin": "使用浏览器或相机扫码打开邀请页",
@@ -74,7 +77,6 @@
     "noCodeYet": "暂无邀请码",
     "viewRecords": "邀请记录",
     "quickCopyLink": "一键复制链接",
-    "close": "关闭",
     "statTotal": "累计邀请",
     "statVip": "VIP 人数",
     "listSectionTitle": "邀请列表",

@@ -13,11 +13,13 @@ import { PasswordResetCode } from '@/entities/password-reset-code.entity';
 import { LoginLogShardService } from '@/auth/login-log-shard.service';
 import { MailService } from '@/auth/mail.service';
 import { SecurityModule } from '@/security/security.module';
+import { UploadsModule } from '@/uploads/uploads.module';
 
 @Module({
   imports: [
     SecurityModule,
     UsersModule,
+    UploadsModule,
     TypeOrmModule.forFeature([RefreshToken, PasswordResetCode]),
     JwtModule.register(jwtConfig),
   ],

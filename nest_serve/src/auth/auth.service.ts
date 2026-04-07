@@ -28,6 +28,8 @@ import { PasswordResetCode } from '@/entities/password-reset-code.entity';
 import { MailService } from '@/auth/mail.service';
 import { ForgotPasswordResetDto } from '@/auth/dto/forgot-password-reset.dto';
 import { LoginRiskService } from '@/security/login-risk.service';
+import { UpdateProfileDto } from '@/auth/dto/update-profile.dto';
+import { UploadsService } from '@/uploads/uploads.service';
 
 const FORGOT_CODE_TTL_MS = 10 * 60 * 1000;
 const FORGOT_SEND_COOLDOWN_MS = 60 * 1000;
@@ -52,6 +54,7 @@ export class AuthService {
     private readonly resetCodeRepo: Repository<PasswordResetCode>,
     private readonly loginLogShard: LoginLogShardService,
     private readonly loginRisk: LoginRiskService,
+    private readonly uploadsService: UploadsService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -252,12 +255,20 @@ export class AuthService {
       id: user.id,
       email: user.email,
       username: user.username,
-      avatar: user.avatar,
+      avatar: this.uploadsService.resolvePublicFileUrl(user.avatar),
       publicKey: user.publicKey,
       isVip: user.isVip,
       createdAt: user.createdAt,
       inviteCode: user.inviteCode,
     };
+  }
+
+  async updateProfile(userId: number, dto: UpdateProfileDto) {
+    await this.usersService.updateProfile(userId, {
+      username: dto.username,
+      avatar: dto.avatar,
+    });
+    return this.getProfile(userId);
   }
 
   /**
@@ -363,7 +374,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         username: user.username,
-        avatar: user.avatar,
+        avatar: this.uploadsService.resolvePublicFileUrl(user.avatar),
         publicKey: user.publicKey,
         inviteCode: user.inviteCode,
       },

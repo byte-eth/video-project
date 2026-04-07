@@ -36,6 +36,27 @@ export interface UserProfile {
   inviteCode?: string
 }
 
+export interface UpdateUserProfilePayload {
+  username?: string
+  avatar?: string
+}
+
+export interface QiniuUploadTokenPayload {
+  directory?: 'assets' | 'avatar' | 'public'
+  fileName?: string
+}
+
+export interface QiniuUploadTokenResult {
+  uploadToken: string
+  key: string
+  bucket: string
+  uploadHost?: string
+  cdnDomain?: string
+  fileUrl?: string
+  expiresIn: number
+  directory: string
+}
+
 export interface UserState {
   uid?: number
   nickname?: string
@@ -84,6 +105,14 @@ export function logout(refresh_token: string): Promise<unknown> {
 
 export function getUserInfo(): Promise<UserProfile> {
   return request.get('/auth/profile') as Promise<UserProfile>
+}
+
+export function updateUserProfile(data: UpdateUserProfilePayload): Promise<UserProfile> {
+  return request.patch('/auth/profile', data) as Promise<UserProfile>
+}
+
+export function getQiniuUploadToken(data: QiniuUploadTokenPayload): Promise<QiniuUploadTokenResult> {
+  return request.post('/uploads/qiniu/token', data) as Promise<QiniuUploadTokenResult>
 }
 
 export interface InvitedUserItem {
