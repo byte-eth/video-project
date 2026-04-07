@@ -10,6 +10,10 @@ import { Public } from '@/common/decorators/public.decorator';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { JwtPayload } from '@/auth/types/jwt-payload.interface';
 import { resolveRequestLang } from '@/i18n/request-lang.util';
+import {
+  resolveClientIp,
+  truncateUserAgent,
+} from '@/auth/client-request.util';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +21,11 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDto, @Req() req: Request) {
+    return this.authService.login(loginDto, {
+      ip: resolveClientIp(req),
+      userAgent: truncateUserAgent(req.headers['user-agent']),
+    });
   }
 
   @Public()

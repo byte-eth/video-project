@@ -10,6 +10,7 @@ import { InternalApiKeyGuard } from '@/guards/internal-api-key.guard';
 import { LoadCurrentUserInterceptor } from '@/common/interceptors/load-current-user.interceptor';
 import { RefreshToken } from '@/entities/refresh-token.entity';
 import { PasswordResetCode } from '@/entities/password-reset-code.entity';
+import { LoginLogShardService } from '@/auth/login-log-shard.service';
 import { MailService } from '@/auth/mail.service';
 
 @Module({
@@ -20,6 +21,7 @@ import { MailService } from '@/auth/mail.service';
   ],
   providers: [
     AuthService,
+    LoginLogShardService,
     MailService,
     InternalApiKeyGuard,
     LoadCurrentUserInterceptor,

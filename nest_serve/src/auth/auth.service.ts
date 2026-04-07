@@ -1,8 +1,14 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { I18nBizError } from '@/common/exceptions/i18n-biz.error';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { LoginLogShardService } from '@/auth/login-log-shard.service';
 import { createHmac, randomInt, randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
@@ -25,8 +31,15 @@ import { ForgotPasswordResetDto } from '@/auth/dto/forgot-password-reset.dto';
 const FORGOT_CODE_TTL_MS = 10 * 60 * 1000;
 const FORGOT_SEND_COOLDOWN_MS = 60 * 1000;
 
+type LoginAuditContext = {
+  ip: string | null;
+  userAgent: string | null;
+};
+
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -36,6 +49,7 @@ export class AuthService {
     private refreshRepo: Repository<RefreshToken>,
     @InjectRepository(PasswordResetCode)
     private readonly resetCodeRepo: Repository<PasswordResetCode>,
+    private readonly loginLogShard: LoginLogShardService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -46,13 +60,33 @@ export class AuthService {
     return null;
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, auditCtx?: LoginAuditContext) {
     const { email, password } = loginDto;
+    const emailNorm = email.trim().toLowerCase();
     const user = await this.validateUser(email, password);
 
     if (!user) {
+      const existing =
+        await this.usersService.findOneByEmailNormalized(emailNorm);
+      await this.safeInsertLoginLog({
+        userId: existing ? existing.id : null,
+        emailNorm,
+        success: false,
+        failureReason: existing ? 'bad_password' : 'unknown_account',
+        ip: auditCtx?.ip ?? null,
+        userAgent: auditCtx?.userAgent ?? null,
+      });
       throw new I18nBizError('auth.invalidCredential', HttpStatus.BAD_REQUEST);
     }
+
+    await this.safeInsertLoginLog({
+      userId: user.id,
+      emailNorm,
+      success: true,
+      failureReason: null,
+      ip: auditCtx?.ip ?? null,
+      userAgent: auditCtx?.userAgent ?? null,
+    });
 
     const session = await this.issueTokensForUser(user);
     return plainToInstance(AuthSessionResponseDto, session);
@@ -254,6 +288,30 @@ export class AuthService {
         return { valid: false as const, error: 'user_not_found' };
       }
       throw e;
+    }
+  }
+
+  private async safeInsertLoginLog(row: {
+    userId: number | null;
+    emailNorm: string;
+    success: boolean;
+    failureReason: string | null;
+    ip: string | null;
+    userAgent: string | null;
+  }): Promise<void> {
+    try {
+      await this.loginLogShard.insert({
+        userId: row.userId,
+        emailNorm: row.emailNorm,
+        success: row.success,
+        failureReason: row.failureReason,
+        ip: row.ip,
+        userAgent: row.userAgent,
+      });
+    } catch (e) {
+      this.logger.warn(
+        `login log insert failed: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
   }
 
