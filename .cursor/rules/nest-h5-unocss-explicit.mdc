@@ -1,0 +1,33 @@
+---
+description: nest_h5 页面与组件使用 UnoCSS 显式 px 工具类，禁用项目 shortcuts
+globs: nest_h5/**/*.vue
+alwaysApply: false
+---
+
+# Nest H5 — UnoCSS 写法约定
+
+在 `nest_h5` 的 Vue 模板中优先用 **UnoCSS 工具类** 做布局与外观；尺寸用 **显式像素任意值**（`Npx`），不要用「省事缩写」。
+
+## 必须避免
+
+1. **不要用** `uno.config.ts` 里定义的 `shortcuts`：`btn`、`flex-between`、`flex-center`、`flex-align-center` 等。请展开为完整工具类（如 `flex justify-between items-center`）。
+2. **不要依赖** 模糊刻度来表达设计稿像素（若稿子是 px，就写 `*-Npx`），避免「只写个数字、靠 rem 换算」造成和稿不一致。
+
+## 推荐写法
+
+- 间距与尺寸：`px-16px`、`py-12px`、`mt-8px`、`gap-10px`、`w-100px`、`h-44px`、`max-w-375px`
+- 排版：`text-14px`、`lh-22px`、`font-500`
+- 圆角与描边：`rounded-8px`、`border-1px`
+- 颜色等仍可用主题键（如 `text-lv1`）或完整值，与现有 `uno.config.ts` 的 `theme` 一致即可
+
+## 示例
+
+```vue
+<!-- 避免 -->
+<div class="flex-center gap-4 p-4">
+
+<!-- 推荐 -->
+<div class="flex justify-center items-center gap-12px px-16px py-12px lh-20px">
+```
+
+Attributify 与 `class` 可并存；**同一套显式 `Npx` 规则**适用于两者。

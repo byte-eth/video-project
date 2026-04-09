@@ -3,8 +3,14 @@ export const getImg = (url: string) => {
     return new URL(`../assets/images/${url}`, import.meta.url).href;
 };
 
-export const getMenuImg = (url: string) => {
-    return new URL(`../assets/images/menu/${url}`, import.meta.url).href;
+/** 宠物页本地图：`src/assets/images/pet/` 下的文件名，如 `dragon_1.png` */
+export const getPetImg = (filename: string) => {
+    return new URL(`../assets/images/pet/${filename}`, import.meta.url).href;
+};
+
+/** 宠物页本地视频：同目录，如 `tiger_1v.mp4` */
+export const getPetVideo = (filename: string) => {
+    return new URL(`../assets/images/pet/${filename}`, import.meta.url).href;
 };
 
 // 滚动条滚动到顶部

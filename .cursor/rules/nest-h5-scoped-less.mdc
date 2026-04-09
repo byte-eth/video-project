@@ -1,0 +1,32 @@
+---
+description: nest_h5 中 Less/CSS 默认 scoped，子组件用 :deep，Teleport 用 :global
+globs: nest_h5/**/*.vue
+alwaysApply: false
+---
+
+# Nest H5 — 样式作用域（Less / CSS）
+
+在 `nest_h5` 的 `.vue` 里只要写了 **`<style lang="less">`**（或普通 `<style>`），**默认必须加 `scoped`**，避免选择器泄漏到全局、污染其它页面或 Vant 全局样式。
+
+## 常规
+
+- 推荐：`<style lang="less" scoped>`，选择器只作用于**当前组件模板里的元素**。
+- 需要改 **子组件 / 第三方组件内部的 DOM**（如 `.van-cell__title`）时，用 **`:deep()`**（Vue 3）穿透，不要把整块样式改成无 scoped。
+
+```vue
+<style lang="less" scoped>
+.card :deep(.van-field__control) {
+  font-size: 14px;
+}
+</style>
+```
+
+## 例外（尽量少用）
+
+- 通过 **`teleport="body"`** 挂到 `document.body` 的节点（例如 Vant `van-popup` 的遮罩/容器），有时**不会**带上本页的 `data-v-*`，纯 scoped 可能选不中。可二选一：
+  1. 在 **同一 scoped 块** 里对**唯一前缀类名**使用 **`:global(.your-prefix-class)`**，仅放开这一条，类名要足够唯一（参考 `pet/index.vue` 的 `pet-exp-rules-overlay`）。
+  2. 或单独一个**极小的**无 scoped 块，只包含这类 Teleport 专用规则（同样必须用唯一类名前缀）。
+
+## 禁止
+
+- 页面/业务组件里大段 **无 scoped** 的 Less，除非团队明确约定为全局入口文件（`nest_h5` 页面一般不要）。
