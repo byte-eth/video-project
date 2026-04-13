@@ -1,0 +1,13 @@
+---
+description: Exclude dist and node_modules from codebase analysis and search
+alwaysApply: true
+---
+
+# Analysis scope
+
+When searching, exploring, or analyzing this repository:
+
+- Do not read, search, or reason about files under **`node_modules/`** or **`dist/`** (including nested paths such as `nest_h5/node_modules`, `nest_serve/dist`).
+- Focus on source and config: e.g. `**/src/**`, root and package config files, and tests outside those directories.
+
+If a terminal search is required and ignores are not applied, restrict paths explicitly (e.g. search under `nest_h5/src`, `nest_serve/src`) rather than scanning the whole tree.

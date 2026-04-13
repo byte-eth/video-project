@@ -82,7 +82,7 @@ onMounted(async () => {
 
 Use Vant components + UnoCSS classes. Dark theme is inherited globally.
 
-**UnoCSS (nest_h5):** Use explicit pixel utilities (`px-16px`, `lh-22px`, `gap-8px`, etc.). Do **not** use shortcuts from `uno.config.ts` (`flex-center`, `flex-between`, `btn`, …)—spell out utilities like `flex justify-center items-center`. See workspace rule `nest-h5-unocss-explicit.mdc`.
+**UnoCSS + scoped Less:** Follow `nest_h5/.cursor/rules/nest-h5-vue.mdc` (explicit `Npx` utilities, no `uno.config.ts` shortcuts; `<style lang="less" scoped>` with `:deep` / `:global` for Teleport as documented there).
 
 ```vue
 <template>
@@ -96,7 +96,7 @@ Common page padding: `padding: 16px 16px 72px 16px` (bottom space for TabBar).
 
 ### 5. Add styles
 
-**Scoped Less (nest_h5):** Any `<style lang="less">` in pages/components should use **`scoped`** to avoid global leakage. Target internals of Vant/child components with **`:deep(...)`**. For `teleport="body"` (e.g. `van-popup` overlay), prefer **`:global(.unique-prefix-class)`** inside the same scoped block when scoped selectors do not apply. See workspace rule `nest-h5-scoped-less.mdc`.
+See the same `nest_h5/.cursor/rules/nest-h5-vue.mdc` (scoped Less / `:deep` / Teleport).
 
 ```vue
 <style lang="less" scoped>

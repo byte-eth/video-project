@@ -1,0 +1,64 @@
+---
+description: nest_h5 Vue：scoped Less/CSS、:deep、Teleport；UnoCSS 显式 px、禁用 shortcuts
+globs: nest_h5/**/*.vue
+alwaysApply: false
+---
+
+# Nest H5 — Vue 页面约定（样式 + UnoCSS）
+
+## 样式作用域（Less / CSS）
+
+在 `nest_h5` 的 `.vue` 里只要写了 **`<style lang="less">`**（或普通 `<style>`），**默认必须加 `scoped`**，避免选择器泄漏到全局、污染其它页面或 Vant 全局样式。
+
+### 常规
+
+- 推荐：`<style lang="less" scoped>`，选择器只作用于**当前组件模板里的元素**。
+- 需要改 **子组件 / 第三方组件内部的 DOM**（如 `.van-cell__title`）时，用 **`:deep()`**（Vue 3）穿透，不要把整块样式改成无 scoped。
+
+```vue
+<style lang="less" scoped>
+.card :deep(.van-field__control) {
+  font-size: 14px;
+}
+</style>
+```
+
+### 例外（尽量少用）
+
+- 通过 **`teleport="body"`** 挂到 `document.body` 的节点（例如 Vant `van-popup` 的遮罩/容器），有时**不会**带上本页的 `data-v-*`，纯 scoped 可能选不中。可二选一：
+  1. 在 **同一 scoped 块** 里对**唯一前缀类名**使用 **`:global(.your-prefix-class)`**，仅放开这一条，类名要足够唯一（参考 `pet/index.vue` 的 `pet-exp-rules-overlay`）。
+  2. 或单独一个**极小的**无 scoped 块，只包含这类 Teleport 专用规则（同样必须用唯一类名前缀）。
+
+### 禁止
+
+- 页面/业务组件里大段 **无 scoped** 的 Less，除非团队明确约定为全局入口文件（`nest_h5` 页面一般不要）。
+
+---
+
+## UnoCSS 写法约定
+
+在 `nest_h5` 的 Vue 模板中优先用 **UnoCSS 工具类** 做布局与外观；尺寸用 **显式像素任意值**（`Npx`），不要用「省事缩写」。
+
+### 必须避免
+
+1. **不要用** `uno.config.ts` 里定义的 `shortcuts`：`btn`、`flex-between`、`flex-center`、`flex-align-center` 等。请展开为完整工具类（如 `flex justify-between items-center`）。
+2. **不要依赖** 模糊刻度来表达设计稿像素（若稿子是 px，就写 `*-Npx`），避免「只写个数字、靠 rem 换算」造成和稿不一致。
+
+### 推荐写法
+
+- 间距与尺寸：`px-16px`、`py-12px`、`mt-8px`、`gap-10px`、`w-100px`、`h-44px`、`max-w-375px`
+- 排版：`text-14px`、`lh-22px`、`font-500`
+- 圆角与描边：`rounded-8px`、`border-1px`
+- 颜色等仍可用主题键（如 `text-lv1`）或完整值，与现有 `uno.config.ts` 的 `theme` 一致即可
+
+### 示例
+
+```vue
+<!-- 避免 -->
+<div class="flex-center gap-4 p-4">
+
+<!-- 推荐 -->
+<div class="flex justify-center items-center gap-12px px-16px py-12px lh-20px">
+```
+
+Attributify 与 `class` 可并存；**同一套显式 `Npx` 规则**适用于两者。
